@@ -71,24 +71,217 @@ One note before you delve into your tasks: for each endpoint, you are expected t
 
 You will need to provide detailed documentation of your API endpoints including the URL, request parameters, and the response body. Use the example below as a reference.
 
-### Documentation Example
+### API Documentation 
 
-`GET '/api/v1.0/categories'`
-
-- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
-- Request Arguments: None
-- Returns: An object with a single key, `categories`, that contains an object of `id: category_string` key: value pairs.
-
-```json
+GET `/api/categories` 
+Fetches a dictionary of all available categories
+- *Request parameters:* none 
+- *Example response:*  
+```
 {
-  "1": "Science",
-  "2": "Art",
-  "3": "Geography",
-  "4": "History",
-  "5": "Entertainment",
-  "6": "Sports"
+  "categories": {
+    "1": "Science", 
+    "2": "Art", 
+    "3": "Geography", 
+    "4": "History", 
+    "5": "Entertainment", 
+    "6": "Sports"
+  }, 
+  "success": true
+}
+
+```
+
+
+GET `/api/questions?page=<page_number>` 
+Fetches a paginated object with questions of all available categories
+- *Request parameters (optional):* page:int 
+- *Example response:*  
+ ```{
+  "categories": {
+    "1": "Science", 
+    "2": "Art", 
+    "3": "Geography", 
+    "4": "History", 
+    "5": "Entertainment", 
+    "6": "Sports"
+  }, 
+  "current_category": null, 
+  "questions": [
+    {
+      "answer": "Muhammad Ali", 
+      "category": 4, 
+      "difficulty": 1, 
+      "id": 9, 
+      "question": "What boxer's original name is Cassius Clay?"
+    }, 
+    {
+      "answer": "Apollo 13", 
+      "category": 5, 
+      "difficulty": 4, 
+      "id": 2, 
+      "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    }, 
+    {
+      "answer": "Tom Cruise", 
+      "category": 5, 
+      "difficulty": 4, 
+      "id": 4, 
+      "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+    }, 
+    {
+      "answer": "Edward Scissorhands", 
+      "category": 5, 
+      "difficulty": 3, 
+      "id": 6, 
+      "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+    }, 
+    {
+      "answer": "Brazil", 
+      "category": 6, 
+      "difficulty": 3, 
+      "id": 10, 
+      "question": "Which is the only team to play in every soccer World Cup tournament?"
+    }, 
+    {
+      "answer": "Uruguay", 
+      "category": 6, 
+      "difficulty": 4, 
+      "id": 11, 
+      "question": "Which country won the first ever soccer World Cup in 1930?"
+    }, 
+    {
+      "answer": "George Washington Carver", 
+      "category": 4, 
+      "difficulty": 2, 
+      "id": 12, 
+      "question": "Who invented Peanut Butter?"
+    }, 
+    {
+      "answer": "Lake Victoria", 
+      "category": 3, 
+      "difficulty": 2, 
+      "id": 13, 
+      "question": "What is the largest lake in Africa?"
+    }, 
+    {
+      "answer": "The Palace of Versailles", 
+      "category": 3, 
+      "difficulty": 3, 
+      "id": 14, 
+      "question": "In which royal palace would you find the Hall of Mirrors?"
+    }, 
+    {
+      "answer": "Agra", 
+      "category": 3, 
+      "difficulty": 2, 
+      "id": 15, 
+      "question": "The Taj Mahal is located in which Indian city?"
+    }
+  ], 
+  "success": true, 
+  "total_questions": 18
+}
+
+```
+
+DELETE `/api/questions/<question_id>`
+Delete an existing questions from the repository of available questions
+- *Request arguments:* question_id:int 
+- *Example response:* 
+```
+{ 
+  "success": true,
+  "deleted": "3",
 }
 ```
+
+POST `/api/questions`
+Add a new question to the repository of available questions
+- *Request body:* {question:string, answer:string, difficulty:int, category:string}
+- *Example response:* 
+```
+{
+  "success": true,
+  "created": 3, 
+}
+```
+POST `/api/questions/search`
+Fetches all questions where a substring matches the search term (not case-sensitive)
+- *Request body:* {searchTerm:string}
+- *Example response:*
+```
+{
+  "current_category": null, 
+  "questions": [
+    {
+      "answer": "Edward Scissorhands", 
+      "category": 5, 
+      "difficulty": 3, 
+      "id": 6, 
+      "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+    }
+  ], 
+  "success": true, 
+  "total_questions": 1
+}
+```
+
+GET `/api/categories/<int:category_id>/questions`
+Fetches a dictionary of questions for the specified category
+- *Request argument:* category_id:int
+- *Example response:*
+```
+{
+  "current_category": 4, 
+  "questions": [
+    {
+      "answer": "Muhammad Ali", 
+      "category": 4, 
+      "difficulty": 1, 
+      "id": 9, 
+      "question": "What boxer's original name is Cassius Clay?"
+    }, 
+    {
+      "answer": "George Washington Carver", 
+      "category": 4, 
+      "difficulty": 2, 
+      "id": 12, 
+      "question": "Who invented Peanut Butter?"
+    }, 
+    {
+      "answer": "Scarab", 
+      "category": 4, 
+      "difficulty": 4, 
+      "id": 23, 
+      "question": "Which dung beetle was worshipped by the ancient Egyptians?"
+    }
+  ], 
+  "success": true, 
+  "total_questions": 3
+}
+
+```
+POST `/api/quizzes`
+Fetches one random question within a specified category. Previously asked questions are not asked again. 
+- *Request body:* {previous_questions: arr, quiz_category: {id:int, type:string} }
+- *Example response*: 
+```
+{
+  "question": {
+    "answer": "Muhammad Ali", 
+    "category": 4, 
+    "difficulty": 1, 
+    "id": 9, 
+    "question": "What boxer's original name is Cassius Clay?"
+  }, 
+  "success": true
+}
+
+```
+
+
+
 
 ## Testing
 
