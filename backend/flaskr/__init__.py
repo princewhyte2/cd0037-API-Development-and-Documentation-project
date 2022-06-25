@@ -33,15 +33,11 @@ def create_app(test_config=None):
     Create an endpoint to handle GET requests
     for all available categories.
     """
-    @app.route('/api/categories')
+    @app.route('/api/categories',methods=['GET'])
     def get_categories():
-        categories = Category.query.order_by.all()
-        categories_list = [category.type for category in categories]
-        return jsonify({
-            'success': True,
-            'categories': categories_list
-        })
-
+        data = Category.query.all()
+        categories = {category.id: category.type for category in data}
+        return jsonify({'success': True, 'categories': categories}), 200
 
     """
     @TODO:
@@ -60,7 +56,7 @@ def create_app(test_config=None):
         page = request.args.get('page', 1, type=int)
         questions = Question.query.paginate(page, QUESTIONS_PER_PAGE, False)
         categories = Category.query.all()
-        categories_list = [category.type for category in categories]
+        categories_list = {category.id: category.type for category in categories}
         return jsonify({
             'success': True,
             'questions': [question.format() for question in questions.items],
@@ -123,7 +119,7 @@ def create_app(test_config=None):
     only question that include that string within their question.
     Try using the word "title" to start.
     """
-    @app.route('/api/search', methods=['POST'])
+    @app.route('/api/questions/search', methods=['POST'])
     def search_questions():
         body = request.get_json()
         search_term = body.get('searchTerm')
